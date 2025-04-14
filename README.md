@@ -73,11 +73,11 @@ node src/index.js resources ./data/challenge-api.resources.json
 
 ## 📒 Error Logs
 All failed migrations are logged under the `logs/` folder by model:
-- `logs/memberprofile_errors.log`
-- `logs/memberstats_errors.log`
-- `logs/resourcerole_errors.log`
-- `logs/resource_errors.log`
-- `logs/resourcerolephasedependency_errors.log`
+- `logs/memberprofile_errors.log`← from MemberProfile_dynamo_data.json` 
+- `logs/memberstats_errors.log`← from MemberStats_dynamo_data.json`
+- `logs/resourcerole_errors.log`← from ResourceRole_dynamo_data.json
+- `logs/resource_errors.log`← from challenge-api.resources.json
+- `logs/resourcerolephasedependency_errors.log`← from ResourceRolePhaseDependency_dynamo_data.json
 
 ## ✅ Verification
 You can verify successful migration with simple SQL queries, for example:
