@@ -107,7 +107,7 @@ All failed migrations are logged under the `logs/` folder by model:
 - `logs/memberstats_errors.log` ← from `MemberStats_dynamo_data.json` *(1 migration failed)*
 - `logs/rrpd_errors.log` ← from `ResourceRolePhaseDependency_dynamo_data.json` *(17 migrations failed)*
 
-> ✅ **Note:** These are minor cases — most records were migrated successfully.
+> ✅ Most migrations complete successfully. Errors are logged for further review and debugging.
 
 ## ✅ Verification
 You can verify successful migration with simple SQL queries, for example:
