@@ -85,6 +85,7 @@ docker exec -it resources_postgres psql -U postgres -d resourcesdb
 
 ## 📸 Screenshots
 See `/docs/` for evidence of a fully mounted database.
+![Screenshot from 2025-04-14 16-58-20](https://github.com/user-attachments/assets/8fb66fb8-3db1-4b51-bb29-c1db7b207689)
 
 ## 📝 Notes
 - The `resources` data was exported from ElasticSearch and uses NDJSON format. Each line must be a valid JSON object.
