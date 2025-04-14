@@ -5,8 +5,8 @@ This tool is designed to **migrate data from DynamoDB (JSON format) to PostgreSQ
 - `MemberProfile`
 - `MemberStats`
 - `ResourceRole`
-- `Resource`
 - `ResourceRolePhaseDependency`
+- `Resource`
 
 ## 📦 Technologies Used
 - **Node.js** (backend scripting)
@@ -30,17 +30,46 @@ CREATED_BY=eduardo node src/index.js member-stats ./data/MemberStats_test.json
 ```
 
 ## 🚀 How to Run
+
+This tool expects a running PostgreSQL instance defined in `docker-compose.yml`.
+
+1. Clone the repo and install dependencies:
+
 ```bash
 npm install
-npm test                     # To run tests
-npm run db:up                # To start PostgreSQL via docker-compose
-npx prisma db push           # To apply schema
-node src/index.js <step>     # To run a specific migration
 ```
 
-Optionally, provide a custom path:
+2. Start PostgreSQL with Docker Compose:
+
 ```bash
-node src/index.js member-profiles ./data/MemberProfile_test.json
+docker-compose up -d
+```
+
+To tear it down completely (including the volume):
+
+```bash
+docker-compose down -v
+```
+
+> The database runs on port `5432` with credentials `postgres:postgres`, and is mapped to `resourcesdb`.
+
+3. Push the Prisma schema to the database:
+
+```bash
+npx prisma db push
+```
+
+4. Run a migration step (with optional file override):
+
+```bash
+node src/index.js member-stats
+node src/index.js resources ./data/challenge-api.resources.json
+```
+
+You can override the default `createdBy` value:
+
+```bash
+CREATED_BY=my-migrator node src/index.js member-profiles
 ```
 
 ## 🧩 Available Migration Steps
@@ -73,11 +102,9 @@ node src/index.js resources ./data/challenge-api.resources.json
 
 ## 📒 Error Logs
 All failed migrations are logged under the `logs/` folder by model:
-- `logs/memberprofile_errors.log`← from MemberProfile_dynamo_data.json` 
-- `logs/memberstats_errors.log`← from MemberStats_dynamo_data.json`
-- `logs/resourcerole_errors.log`← from ResourceRole_dynamo_data.json
-- `logs/resource_errors.log`← from challenge-api.resources.json
-- `logs/resourcerolephasedependency_errors.log`← from ResourceRolePhaseDependency_dynamo_data.json
+- `logs/memberprofile_errors.log`← from MemberProfile_dynamo_data.json` (7 migration failed)
+- `logs/memberstats_errors.log`← from MemberStats_dynamo_data.json`(1 migration failed)
+- `logs/rrpd_errors.log`← from ResourceRolePhaseDependency_dynamo_data.json (17 migration failed)
 
 ## ✅ Verification
 You can verify successful migration with simple SQL queries, for example:
@@ -93,6 +120,18 @@ docker exec -it resources_postgres psql -U postgres -d resourcesdb
 ## 📸 Screenshots
 See `/docs/` for evidence of a fully mounted database.
 ![Screenshot from 2025-04-14 16-58-20](https://github.com/user-attachments/assets/8fb66fb8-3db1-4b51-bb29-c1db7b207689)
+
+## 🧪 Testing
+
+Run all test suites with:
+
+```bash
+npm test
+```
+
+Each migrator has a corresponding unit test with mock input files under `src/test/mocks/`. Jest is used as the testing framework.
+
+---
 
 ## 📝 Notes
 - The `resources` data was exported from ElasticSearch and uses NDJSON format. Each line must be a valid JSON object.
