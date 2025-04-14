@@ -53,16 +53,22 @@ node src/index.js member-profiles ./data/MemberProfile_test.json
 | `resource-role-phase-dependencies` | ❌            | Simple in-memory migration using `loadJSON`, not expected to be large                             |
 | `resources`                        | ✅            | Auto strategy for NDJSON files: uses `readline` + batch for files > 3 MB, otherwise simple line-by-line       |
 
-## 📁 File Structure
-All data files used were provided in the forum Drive:
-**[challenge-api-data on Drive](https://drive.google.com/file/d/1F8YW-fnKjn8tt5a0_Z-QenZIHPiP3RK7/view?usp=sharing)**
+### 📁 Default Input Files per Migration Step
 
-They are located in the `./data/` folder:
-- `MemberProfile_dynamo_data.json`
-- `MemberStats_dynamo_data.json`
-- `ResourceRole_dynamo_data.json`
-- `ResourceRolePhaseDependency_dynamo_data.json`
-- `Resource_data.json` ← from `challenge-api.resources.json`, requires NDJSON format
+The following files are used by default for each step, unless a custom path is provided via the CLI:
+
+| Step                                | Default File Path                                             |
+|-------------------------------------|----------------------------------------------------------------|
+| `member-profiles`                  | `./data/MemberProfile_dynamo_data.json`                       |
+| `member-stats`                     | `./data/MemberStats_dynamo_data.json`                         |
+| `resource-roles`                   | `./data/ResourceRole_dynamo_data.json`                        |
+| `resource-role-phase-dependencies` | `./data/ResourceRolePhaseDependency_dynamo_data.json`         |
+| `resources`                        | `./data/Resource_data.json`                                   |
+
+💡 **Note:** If you're using the original file provided in the forum (`challenge-api.resources.json` from [this link](https://drive.google.com/file/d/1F8YW-fnKjn8tt5a0_Z-QenZIHPiP3RK7/view?usp=sharing)), you must run the `resources` step explicitly with its path:
+
+```bash
+node src/index.js resources ./data/challenge-api.resources.json
 
 ## 📒 Error Logs
 All failed migrations are logged under the `logs/` folder by model:
