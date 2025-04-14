@@ -63,9 +63,9 @@ The following files are used by default for each step, unless a custom path is p
 | `member-stats`                     | `./data/MemberStats_dynamo_data.json`                         |
 | `resource-roles`                   | `./data/ResourceRole_dynamo_data.json`                        |
 | `resource-role-phase-dependencies` | `./data/ResourceRolePhaseDependency_dynamo_data.json`         |
-| `resources`                        | `./data/Resource_data.json`← requires NDJSON format                                   |
+| `resources`                        | `./data/Resource_data.json` ← requires NDJSON format          |
 
-💡 **Note:** If you're using the original file provided in the forum (`challenge-api.resources.json` from [this link](https://drive.google.com/file/d/1F8YW-fnKjn8tt5a0_Z-QenZIHPiP3RK7/view?usp=sharing)), you must run the `resources` step explicitly with its path:
+💡 **Note:** If you're using the original ElasticSearch export file (`challenge-api.resources.json`) provided in the forum ([link here](https://drive.google.com/file/d/1F8YW-fnKjn8tt5a0_Z-QenZIHPiP3RK7/view?usp=sharing)), you must explicitly provide its path when running the migration:
 
 ```bash
 node src/index.js resources ./data/challenge-api.resources.json
