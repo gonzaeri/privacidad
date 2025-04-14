@@ -45,13 +45,13 @@ node src/index.js member-profiles ./data/MemberProfile_test.json
 
 ## 🧩 Available Migration Steps
 
-| Step | Auto Strategy | Description |
-|------|---------------|-------------|
-| `member-profiles` | ✅ | Uses `stream-json` for large files, fallback to `loadJSON` for small ones |
-| `member-stats`    | ✅ | Same logic as above |
-| `resource-roles`  | ❌ | Uses full `loadJSON`, not expected to be large |
-| `resource-role-phase-dependencies` | ❌ | Small, in-memory migration |
-| `resources`       | ✅ | Uses `readline` over NDJSON format from ElasticSearch export |
+| Step                                | Auto Strategy | Description                                                                                       |
+|-------------------------------------|---------------|---------------------------------------------------------------------------------------------------|
+| `member-profiles`                  | ✅            | Auto strategy: uses `stream-json` (batch) for files larger than 3MB, and `loadJSON` (simple) otherwise |
+| `member-stats`                     | ✅            | Auto strategy: uses `stream-json` (batch) for files larger than 3MB, and `loadJSON` (simple) otherwise |
+| `resource-roles`                   | ❌            | Simple in-memory migration using `loadJSON`, not expected to be large                             |
+| `resource-role-phase-dependencies` | ❌            | Simple in-memory migration using `loadJSON`, not expected to be large                             |
+| `resources`                        | ✅            | Batch migration using `readline` over NDJSON format exported from ElasticSearch                   |
 
 ## 📁 File Structure
 All data files used were provided in the forum Drive:
