@@ -51,7 +51,7 @@ node src/index.js member-profiles ./data/MemberProfile_test.json
 | `member-stats`                     | ✅            | Auto strategy: uses `stream-json` (batch) for files larger than 3MB, and `loadJSON` (simple) otherwise |
 | `resource-roles`                   | ❌            | Simple in-memory migration using `loadJSON`, not expected to be large                             |
 | `resource-role-phase-dependencies` | ❌            | Simple in-memory migration using `loadJSON`, not expected to be large                             |
-| `resources`                        | ✅            | Auto strategy: uses `readline` (batch) for NDJSON files larger than 3 MB, and in-memory otherwise |
+| `resources`                        | ✅            | Auto strategy for NDJSON files: uses `readline` + batch for files > 3 MB, otherwise simple line-by-line       |
 
 ## 📁 File Structure
 All data files used were provided in the forum Drive:
