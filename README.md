@@ -69,7 +69,7 @@ The following files are used by default for each step, unless a custom path is p
 
 ```bash
 node src/index.js resources ./data/challenge-api.resources.json
-
+```
 
 ## 📒 Error Logs
 All failed migrations are logged under the `logs/` folder by model:
