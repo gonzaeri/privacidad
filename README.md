@@ -81,6 +81,14 @@
   | `resource-roles`                   | ❌            | Simple in-memory migration using `loadJSON`, not expected to be large                             |
   | `resource-role-phase-dependencies` | ❌            | Simple in-memory migration using `loadJSON`, not expected to be large                             |
   | `resources`                        | ✅            | Auto strategy for NDJSON files: uses `readline` + batch for files > 3 MB, otherwise simple line-by-line       |
+
+  > ⚙️ **Why Auto Strategy?**
+>
+> For models that involve large datasets (`member-profiles`, `member-stats`, and `resources`), the tool implements an **automatic selection strategy** based on file size:
+> - If the input file is **larger than 3 MB**, the migration runs in **batch mode using streaming (e.g., `stream-json` or `readline`)** to reduce memory usage.
+> - For **smaller files**, it defaults to **simple in-memory processing** (`loadJSON`) for faster performance.
+>
+> This approach ensures optimal balance between **efficiency** and **stability**, especially when working with hundreds of thousands of records (e.g., over 850,000 for MemberProfile).
   
   ### 📁 Default Input Files per Migration Step
   
