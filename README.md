@@ -111,3 +111,8 @@ Each level triggers the display of the next, and the components are updated dyna
   height={condensedHeight * 1.2}
 />
 
+---
+
+### 🎥 Demo Video
+
+A test video is included in the `/docs` folder for demonstration purposes.
