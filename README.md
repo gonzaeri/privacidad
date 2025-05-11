@@ -1,84 +1,113 @@
-# 📝 README: Resolved Issues in the Project
+## Topcoder Showcase Carousel
 
-This README documents the **resolved issues** in the migration project and improvements related to the `role` module and Postman tests.
+### 🚀 Getting Started
 
-## 1. **Potential Race Condition in Role Update**
+#### 1. Install & Run
 
-**Affected file:** `api/role/role.service.ts`  
-**Line:** 146  
+Make sure you have **Node.js v18+** installed. Then, from the root folder:
 
-**Problem description:**  
-In the role update method, there was a potential race condition between checking for duplicates and creating the role, which could allow the creation of duplicate roles if both operations were executed simultaneously.
+```bash
+npm install
+npm run dev
+```
 
-**Solution applied:**
-- Implemented a **transaction** in Prisma to ensure that role verification and creation are executed atomically.
-- Added a **unique constraint** at the database level to ensure no duplicate roles can be created.
+Once the dev server is running, open your browser at:
 
----
-
-## 2. **Error Handling in Role Assignment**
-
-**Affected file:** `api/role/role.service.ts`  
-**Line:** 220  
-
-**Problem description:**  
-In the `assignRoleToSubject` method, when a duplicate assignment (P2002 error) was detected, it was silently ignored, which could be confusing for clients.
-
-**Solution applied:**
-- Modified the error handling to either:
-  - Return a **success response** with a message indicating the role was already assigned.
-  - Or throw a **specific exception** that the client can handle properly.
+👉 `http://localhost:3000`
 
 ---
 
-## 3. **Missing Input Validation**
+### 📁 Project Structure
 
-**Problem description:**  
-The `roleName` in `createRoleDto` and `updateRoleDto` lacked length validation. Additionally, `subjectId` and `roleId` were not validated to ensure they were positive numbers, and `subjectType` was not validated to ensure it was a valid value.
+```
+src/
+├── app
+│   ├── favicon.ico
+│   ├── globals.scss
+│   ├── layout.js
+│   ├── page.js             # Main entry point
+│   └── page.module.css
+├── components
+│   ├── Carousel
+│   │   ├── Carousel.module.scss
+│   │   ├── EmblaCustomers.jsx
+│   │   ├── EmblaIndustry.jsx
+│   │   ├── EmblaProjects.jsx
+│   │   └── Slide.jsx
+│   └── Shared
+│       └── TitleSection.jsx
+├── data
+│   └── mockData.js
+└── utils
+    └── helpers.js  # contains generateParabolaClipPath
+```
 
-**Solution applied:**
-- **Added validations** to the DTOs:
-  - `roleName`: Ensured its length is within a valid range.
-  - `subjectId` and `roleId`: Validated to ensure they are positive numbers.
-  - `subjectType`: Validated to ensure it is a valid value from a predefined list.
-
----
-
-## 4. **Using Postman Environment for Token Management**
-
-**Problem description:**  
-Updating the Postman collection required manually updating the authorization token in each request, which was error-prone and difficult to maintain.
-
-**Solution applied:**
-- Implemented a **Postman environment file** to dynamically handle the authorization token, eliminating the need for manual updates.
-- Added an example of using `sed` for automation, but now everything is managed through the Postman environment.
-
----
-
-## 5. **Missing Postman Tests for `deassign`**
-
-**Problem description:**  
-The Postman test collection didn't include tests for the **`deassign`** endpoint, which is crucial for validating the removal of assigned roles.
-
-**Solution applied:**
-- **Added tests** for the `deassign` endpoint in the Postman collection, ensuring that the system correctly handles role removals.
+You can remove any unused files (like `TitleSection.jsx`) if not referenced anywhere in your layout.
 
 ---
 
-## 6. **Missing Postman Tests for `hasRole`**
+### 📦 Libraries Used
 
-**Problem description:**  
-The Postman test collection didn't include tests for the **`hasRole`** endpoint, which verifies if a subject has an assigned role.
-
-**Solution applied:**
-- **Added tests** for the `hasRole` endpoint in the Postman collection, ensuring that role verification functionality is fully covered.
+* [`embla-carousel-react`](https://www.embla-carousel.com/)
+* [`framer-motion`](https://www.framer.com/motion/)
+* [`react`](https://reactjs.org/)
+* [`sass`](https://sass-lang.com/) for modular and responsive styling
 
 ---
 
-## 🛠️ **Summary of improvements made**
+### 🧩 Description
 
-- **Race condition control** in role update via transactions and unique constraints.
-- **Improved error handling** in role assignment, ensuring that duplicate errors are handled properly.
-- **Input validation** in DTOs to ensure correct and consistent data.
-- **Automated token management** in Postman using environment variables to avoid manual edits.
-- **Added Postman tests** for the `deassign` and `hasRole` endpoints, completing the test coverage.
+This project implements a dynamic multi-carousel interface in React (Next.js), using `embla-carousel` for infinite scrolling, `framer-motion` for animated transitions, and custom `clip-path` logic for parabolic visual effects. The user flow follows a hierarchical structure:
+
+```
+Industry → Customer → Projects
+```
+
+Each level triggers the display of the next, and the components are updated dynamically with animated highlight states and layout stability across interactions.
+
+---
+
+### Features
+
+* ✅ Infinite, centered carousels powered by `embla-carousel`
+* ✅ Custom parabolic top and bottom clipping (`clip-path: polygon(...)`)
+* ✅ Responsive design with dynamic layout and clipping based on window size
+* ✅ Scroll and resize synchronization with smooth updates
+* ✅ Header text switches based on `selectedCustomer` presence
+* ✅ Full deselection logic when switching industries
+* ✅ No layout shift when switching header content
+* ✅ AnimatePresence-based fade-ins for conditional carousels
+
+---
+
+### Component Overview
+
+* `EmblaIndustry`: Main carousel displaying industry options
+* `EmblaCustomers`: Triggered by industry, shows associated customers
+* `EmblaProjects`: Triggered by customer, shows associated projects
+* `generateParabolaClipPath`: Helper function to generate dynamic polygon clip paths
+* `page.js`: Orchestrates shared state and dynamic layout
+
+---
+
+### Key Props & Usage
+
+```jsx
+<EmblaIndustry
+  selectedIndustry={selectedIndustry}
+  onIndustrySelect={handleIndustrySelect}
+  onCondensedHeightReady={setCondensedHeight}
+/>
+
+<EmblaCustomers
+  customers={selectedIndustry.customers}
+  height={condensedHeight * 1.2}
+  onCustomerSelect={setSelectedCustomer}
+  selectedCustomer={selectedCustomer}
+/>
+
+<EmblaProjects
+  projects={selectedCustomer.projects}
+  height={condensedHeight * 1.2}
+/>
+
