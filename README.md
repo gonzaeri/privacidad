@@ -56,9 +56,7 @@ docker-compose up -d autopilot-app
 
 ### 6. Verify health endpoint
 
-
-
-creo que aqui tiene que esperar unos segundos cierto..?
+After starting the app, wait a few seconds to allow full initialization. Then run:
 
 ```bash
 curl http://localhost:3000/health
