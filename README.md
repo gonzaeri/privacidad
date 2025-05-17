@@ -197,6 +197,3 @@ Uses Newman to validate the full request flow with live JWT retrieval and a 401 
 * Postman collection and environment are included in `doc/`.
 
 ---
-
-**Author:** Challenge participant – Autopilot Kafka Setup
-**Date:** May 2025
