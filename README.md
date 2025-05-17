@@ -195,5 +195,3 @@ Uses Newman to validate the full request flow with live JWT retrieval and a 401 
 * All requests are validated against strict schemas.
 * Producers and consumers are modularized per topic.
 * Postman collection and environment are included in `doc/`.
-
----
