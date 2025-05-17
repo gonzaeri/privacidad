@@ -126,13 +126,40 @@ Response:
 
 ### Kafka Producer - POST /kafka/\:topic
 
-Send a message to one of the supported Kafka topics:
+Sends a message to a supported Kafka topic. Each topic is associated with:
 
-* `autopilot.command`
-* `autopilot.phase.transition`
-* `autopilot.challenge.update`
+* A **strict Joi schema** for validation
+* A **dedicated producer class** (`*.producer.ts`) that encapsulates the publishing logic
+* An optional **consumer handler** (`*.consumer.ts`) that processes messages asynchronously
 
-Each topic enforces strict payload validation via Joi schemas.
+#### Supported Topics:
+
+* `autopilot.command` → handled by `CommandProducer` / `handleCommandMessage`
+* `autopilot.phase.transition` → `PhaseTransitionProducer` / `handlePhaseTransitionMessage`
+* `autopilot.challenge.update` → `ChallengeUpdateProducer` / `handleChallengeUpdateMessage`
+
+---
+
+## Project Structure
+
+```
+src/
+├── app.module.ts
+├── auth/              # AuthService with JWT generation
+├── autopilot/         # Placeholder for future services
+├── common/            # Shared interfaces/utilities
+├── config/            # Environment config & validation
+├── health/            # Health check controller
+├── kafka/             # Kafka integration layer
+│   ├── producers/     # One file per topic for publishing
+│   ├── consumers/     # One file per topic for consuming logic
+│   ├── kafka.service.ts
+│   ├── kafka.controller.ts
+│   └── kafka.schemas.ts
+└── main.ts
+```
+
+---
 
 ## Testing
 
@@ -166,4 +193,10 @@ Uses Newman to validate the full request flow with live JWT retrieval and a 401 
 * Endpoints are protected using `@nestjs/passport` and `AuthGuard('jwt')`.
 * The architecture is designed to later support external token providers such as Kafka Cloud or Topcoder M2M API.
 * All requests are validated against strict schemas.
+* Producers and consumers are modularized per topic.
 * Postman collection and environment are included in `doc/`.
+
+---
+
+**Author:** Challenge participant – Autopilot Kafka Setup
+**Date:** May 2025
