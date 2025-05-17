@@ -1,118 +1,171 @@
-## Topcoder Showcase Carousel
+# Autopilot Kafka Integration - Topcoder Challenge
 
-### 🚀 Getting Started
+## Overview
 
-#### 1. Install & Run
+This project sets up the foundational infrastructure for the Topcoder Autopilot system using NestJS and Kafka. It provides a robust, extensible, event-driven architecture ready for production environments and future enhancements.
 
-Make sure you have **Node.js v18+** installed. Then, from the root folder:
+---
+
+## Prerequisites
+
+* Node.js v18+ or later
+* Docker
+* Docker Compose
+
+---
+
+## Setup Instructions
+
+### 1. Clone the repository and install dependencies
 
 ```bash
 npm install
-npm run dev
 ```
 
-Once the dev server is running, open your browser at:
+### 2. Prepare environment variables
 
-👉 `http://localhost:3000`
-
----
-
-### 📁 Project Structure
-
-```
-src/
-├── app
-│   ├── favicon.ico
-│   ├── globals.scss
-│   ├── layout.js
-│   ├── page.js             # Main entry point
-│   └── page.module.css
-├── components
-│   ├── Carousel
-│   │   ├── Carousel.module.scss
-│   │   ├── EmblaCustomers.jsx
-│   │   ├── EmblaIndustry.jsx
-│   │   ├── EmblaProjects.jsx
-│   │   └── Slide.jsx
-│   └── Shared
-│       └── TitleSection.jsx
-├── data
-│   └── mockData.js
-└── utils
-    └── helpers.js  # contains generateParabolaClipPath
+```bash
+cp .env.sample .env
 ```
 
-You can remove any unused files (like `TitleSection.jsx`) if not referenced anywhere in your layout.
+Edit the `.env` file if needed, especially to set your `JWT_SECRET`.
 
----
+### 3. Start Kafka broker
 
-### 📦 Libraries Used
-
-* [`embla-carousel-react`](https://www.embla-carousel.com/)
-* [`framer-motion`](https://www.framer.com/motion/)
-* [`react`](https://reactjs.org/)
-* [`sass`](https://sass-lang.com/) for modular and responsive styling
-
----
-
-### 🧩 Description
-
-This project implements a dynamic multi-carousel interface in React (Next.js), using `embla-carousel` for infinite scrolling, `framer-motion` for animated transitions, and custom `clip-path` logic for parabolic visual effects. The user flow follows a hierarchical structure:
-
-```
-Industry → Customer → Projects
+```bash
+docker-compose up -d broker
 ```
 
-Each level triggers the display of the next, and the components are updated dynamically with animated highlight states and layout stability across interactions.
+### 4. Create Kafka topics
 
----
-
-### Features
-
-* ✅ Infinite, centered carousels powered by `embla-carousel`
-* ✅ Custom parabolic top and bottom clipping (`clip-path: polygon(...)`)
-* ✅ Responsive design with dynamic layout and clipping based on window size
-* ✅ Scroll and resize synchronization with smooth updates
-* ✅ Header text switches based on `selectedCustomer` presence
-* ✅ Full deselection logic when switching industries
-* ✅ No layout shift when switching header content
-* ✅ AnimatePresence-based fade-ins for conditional carousels
-
----
-
-### Component Overview
-
-* `EmblaIndustry`: Main carousel displaying industry options
-* `EmblaCustomers`: Triggered by industry, shows associated customers
-* `EmblaProjects`: Triggered by customer, shows associated projects
-* `generateParabolaClipPath`: Helper function to generate dynamic polygon clip paths
-* `page.js`: Orchestrates shared state and dynamic layout
-
----
-
-### Key Props & Usage
-
-```jsx
-<EmblaIndustry
-  selectedIndustry={selectedIndustry}
-  onIndustrySelect={handleIndustrySelect}
-  onCondensedHeightReady={setCondensedHeight}
-/>
-
-<EmblaCustomers
-  customers={selectedIndustry.customers}
-  height={condensedHeight * 1.2}
-  onCustomerSelect={setSelectedCustomer}
-  selectedCustomer={selectedCustomer}
-/>
-
-<EmblaProjects
-  projects={selectedCustomer.projects}
-  height={condensedHeight * 1.2}
-/>
+```bash
+sh init-topics.sh
 ```
+
+To verify that the topics were created successfully:
+
+```bash
+docker exec -it broker /opt/kafka/bin/kafka-topics.sh --list --bootstrap-server broker:29092
+```
+
+### 5. Start the application
+
+```bash
+docker-compose up -d autopilot-app
+```
+
+### 6. Verify health endpoint
+
+
+
+creo que aqui tiene que esperar unos segundos cierto..?
+
+```bash
+curl http://localhost:3000/health
+```
+
+Expected output:
+
+```json
+{"status":"ok"}
+```
+
 ---
 
-### 🎥 Demo Video
+## Authentication
 
-A test video is included in the `/docs` folder for demonstration purposes.
+All `/kafka/:topic` endpoints are protected using JWT authentication.
+
+### Requesting a token
+
+```bash
+curl http://localhost:3000/auth/token
+```
+
+Returns:
+
+```json
+{
+  "accessToken": "<jwt-token>",
+  "expiresIn": 3600,
+  "tokenType": "Bearer"
+}
+```
+
+### Making authenticated requests
+
+Example for sending a command:
+
+```bash
+TOKEN=$(curl -s http://localhost:3000/auth/token | jq -r .accessToken)
+
+curl -X POST http://localhost:3000/kafka/autopilot.command \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TOKEN" \
+  -d '{"command":"refresh","operator":"9999"}'
+```
+
+### Unauthorized request (example)
+
+```bash
+curl -X POST http://localhost:3000/kafka/autopilot.command \
+  -H "Content-Type: application/json" \
+  -d '{"command":"refresh","operator":"9999"}'
+```
+
+Response:
+
+```json
+{
+  "message": "Unauthorized",
+  "statusCode": 401
+}
+```
+
+---
+
+## API Endpoints
+
+### Kafka Producer - POST /kafka/\:topic
+
+Send a message to one of the supported Kafka topics:
+
+* `autopilot.command`
+* `autopilot.phase.transition`
+* `autopilot.challenge.update`
+
+Each topic enforces strict payload validation via Joi schemas.
+
+## Testing
+
+### Unit Tests
+
+```bash
+npm run test
+```
+
+### End-to-End Tests
+
+```bash
+npm run test:e2e
+```
+
+Covers `/health`, `/auth/token`, and all `/kafka/:topic` endpoints with valid and invalid tokens.
+
+### Postman Tests (with dynamic token)
+
+```bash
+npm run test:postman
+```
+
+Uses Newman to validate the full request flow with live JWT retrieval and a 401 Unauthorized test case.
+
+---
+
+## Notes
+
+* The current `AuthService` issues real JWTs for local use via `@nestjs/jwt`.
+* Endpoints are protected using `@nestjs/passport` and `AuthGuard('jwt')`.
+* The architecture is designed to later support external token providers such as Kafka Cloud or Topcoder M2M API.
+* All requests are validated against strict schemas.
+* Postman collection and environment are included in `doc/`.
