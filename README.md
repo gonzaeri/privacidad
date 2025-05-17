@@ -147,7 +147,7 @@ src/
 ├── app.module.ts
 ├── auth/              # AuthService with JWT generation
 ├── autopilot/         # Placeholder for future services
-├── common/            # Shared interfaces/utilities
+├── common/            # Shared interfaces/utilities (not used yet, reserved for future extensions)
 ├── config/            # Environment config & validation
 ├── health/            # Health check controller
 ├── kafka/             # Kafka integration layer
