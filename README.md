@@ -148,6 +148,12 @@ Each test logs:
 * Status code and response comparison
 * Pass/Fail based on expected behavior
 
+To run all test cases:
+
+```bash
+python run_all.py
+```
+
 ---
 
 ## 📂 Output
